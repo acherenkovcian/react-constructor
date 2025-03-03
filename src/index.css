@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+/* Дополнительные стили для GrapesJS */
+.gjs-block.gjs-block {
+  @apply p-2 m-2 bg-white border border-gray-200 rounded shadow-sm hover:shadow-md transition-all cursor-grab w-24;
+}
+
+/* Исправление стилей для корректного отображения границ при редактировании */
+.gjs-cv-canvas.gjs-cv-canvas {
+  @apply top-0 w-full h-full;
+}
+
+.gjs-pn-panel.gjs-pn-panel {
+  @apply flex gap-2;
+}
+
+.gjs-block-category.gjs-block-category {
+  @apply flex flex-col gap-2;
+}
+
+.gjs-blocks-c.gjs-blocks-c {
+  justify-content: center;
+}
+
+.gjs-one-bg.gjs-one-bg {
+  @apply bg-zinc-800;
+}
