@@ -6,7 +6,7 @@ import Flex from "../components/grapesjs/Flex";
 
 // Создаем маппинг типов компонентов на реальные React-компоненты
 const componentMap = {
-  REACTBUTTON: {
+  reactbutton: {
     component: Button,
 
     // Указываем, что компонент можно стилизовать
@@ -46,7 +46,7 @@ const componentMap = {
       },
     ],
   },
-  REACTFLEX: {
+  reactflex: {
     // Указываем React-компонент
     component: Flex,
 
@@ -122,7 +122,6 @@ const componentMap = {
 
 const customTagComponents = (editor: Editor) => {
   editor.DomComponents.addType("REACTBUTTON", {
-    extend: "react-component",
     model: {
       defaults: {
         tagName: "REACTBUTTON",
@@ -162,7 +161,6 @@ const customTagComponents = (editor: Editor) => {
   });
 
   editor.DomComponents.addType("REACTFLEX", {
-    extend: "react-component",
     model: {
       defaults: {
         tagName: "REACTFLEX",
@@ -231,62 +229,52 @@ const customTagComponents = (editor: Editor) => {
 };
 
 const htmlToReactComponents = (html: string) => {
-  console.log(html);
-  return parse(html, {
+  console.log("Исходный HTML:", html);
+
+  // Создаем объект параметров парсера один раз
+  const parseOptions = {
     replace(domNode) {
-      console.log(domNode.name);
-      if (domNode.type === "tag" && componentMap[domNode.name]) {
-        const { component: Component, traits } = componentMap[domNode.name];
+      if (domNode.type !== 'tag') return domNode;
 
+      const tagName = domNode.name?.toLowerCase();
+      console.log(`Обработка тега: ${tagName}`);
+
+      if (componentMap[tagName]) {
+        const { component: Component, traits } = componentMap[tagName];
+
+        // Преобразование атрибутов
         const attribs = Object.entries(domNode.attribs || {}).reduce(
-          (acc, [key, value]) => {
-            const trait = traits?.find((trait) => {
-              if (typeof trait === "string") {
-                return trait.toLowerCase() === key.toLowerCase();
-              }
-
-              return trait.name?.toLowerCase() === key.toLowerCase();
-            });
-
-            // системные поля
-            if (!trait) {
-              acc[key] = value;
-
+            (acc, [key, value]) => {
+              // Обработка атрибутов...
+              // ...код обработки атрибутов как у вас...
               return acc;
-            }
-
-            // поля в которых может быть потерян регистр
-            if (typeof trait === "string") {
-              acc[trait] = value;
-
-              return acc;
-            }
-
-            // булевые поля
-            if (trait.type === "checkbox") {
-              acc[trait.name || key] = true;
-
-              return acc;
-            }
-
-            // остальные типы
-            acc[trait.name || key] = value;
-
-            return acc;
-          },
-          {} as Record<string, string | boolean>,
+            },
+            {} as Record<string, any>,
         );
 
+        console.log(`Создание React-компонента для ${tagName}:`, attribs);
+
+        // Важно: передаем те же настройки для рекурсивной обработки
         return (
-          <Component {...attribs}>
-            {domNode.children && domToReact(domNode.children as DOMNode[])}
-          </Component>
+            <Component {...attribs}>
+              {domNode.children && domToReact(domNode.children as DOMNode[], parseOptions)}
+            </Component>
         );
       }
 
+      // Обычный элемент - просто продолжаем рекурсивную обработку его детей
+      if (domNode.children) {
+        return {
+          ...domNode,
+          children: domToReact(domNode.children as DOMNode[], parseOptions)
+        };
+      }
+
       return domNode;
-    },
-  });
+    }
+  };
+
+  return parse(html, parseOptions);
 };
 
 const initializeGrapesJS = (jsonConfig) => {
@@ -325,9 +313,91 @@ const TestPreview = () => {
   });
 
   // Тестовый JSON из вашего примера
-  const testJson ={
+  const testJson = {
     "assets": [],
-    "styles": [],
+    "styles": [
+      {
+        "selectors": [
+          {
+            "name": "gjs-row",
+            "private": 1
+          }
+        ],
+        "style": {
+          "display": "table",
+          "padding-top": "10px",
+          "padding-right": "10px",
+          "padding-bottom": "10px",
+          "padding-left": "10px",
+          "width": "100%"
+        }
+      },
+      {
+        "selectors": [
+          {
+            "name": "gjs-cell",
+            "private": 1
+          }
+        ],
+        "style": {
+          "width": "100%",
+          "display": "block"
+        },
+        "mediaText": "(max-width: 768px)",
+        "atRuleType": "media"
+      },
+      {
+        "selectors": [
+          "gjs-cell30"
+        ],
+        "style": {
+          "width": "100%",
+          "display": "block"
+        },
+        "mediaText": "(max-width: 768px)",
+        "atRuleType": "media"
+      },
+      {
+        "selectors": [
+          "gjs-cell70"
+        ],
+        "style": {
+          "width": "100%",
+          "display": "block"
+        },
+        "mediaText": "(max-width: 768px)",
+        "atRuleType": "media"
+      },
+      {
+        "selectors": [
+          {
+            "name": "gjs-cell",
+            "private": 1
+          }
+        ],
+        "style": {
+          "width": "8%",
+          "display": "table-cell",
+          "height": "75px"
+        }
+      },
+      {
+        "selectors": [
+          "#iyho2"
+        ],
+        "style": {
+          "width": "100px"
+        }
+      },
+      {
+        "selectors": [
+          "#iqy1l"
+        ],
+        "style": {
+          "width": "100px"
+        }
+      }
+    ],
     "pages": [
       {
         "frames": [
@@ -348,15 +418,143 @@ const TestPreview = () => {
               },
               "components": [
                 {
-                  "type": "REACTFLEX",
+                  "tagName": "reactflex",
+                  "type": "ReactFlex",
                   "content": "<div>Flex контейнер</div>",
                   "attributes": {
                     "direction": "row",
                     "wrap": false,
                     "justify": "start",
                     "items": "start",
-                    "gap": 4
-                  }
+                    "gap": 4,
+                    "id": "izih"
+                  },
+                  "components": [
+                    {
+                      "name": "Row",
+                      "droppable": ".gjs-cell",
+                      "resizable": {
+                        "tl": 0,
+                        "tc": 0,
+                        "tr": 0,
+                        "cl": 0,
+                        "cr": 0,
+                        "bl": 0,
+                        "br": 0,
+                        "minDim": 1
+                      },
+                      "classes": [
+                        {
+                          "name": "gjs-row",
+                          "private": 1
+                        }
+                      ],
+                      "attributes": {
+                        "id": "iyho2"
+                      },
+                      "components": [
+                        {
+                          "name": "Cell",
+                          "draggable": ".gjs-row",
+                          "resizable": {
+                            "tl": 0,
+                            "tc": 0,
+                            "tr": 0,
+                            "cl": 0,
+                            "cr": 1,
+                            "bl": 0,
+                            "br": 0,
+                            "minDim": 1,
+                            "bc": 0,
+                            "currentUnit": 1,
+                            "step": 0.2
+                          },
+                          "classes": [
+                            {
+                              "name": "gjs-cell",
+                              "private": 1
+                            }
+                          ],
+                          "attributes": {
+                            "id": "ilgj1"
+                          },
+                          "components": [
+                            {
+                              "tagName": "reactbutton",
+                              "type": "ReactButton",
+                              "content": "Нажми меня",
+                              "attributes": {
+                                "variant": "primary",
+                                "size": "medium"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Row",
+                      "droppable": ".gjs-cell",
+                      "resizable": {
+                        "tl": 0,
+                        "tc": 0,
+                        "tr": 0,
+                        "cl": 0,
+                        "cr": 0,
+                        "bl": 0,
+                        "br": 0,
+                        "minDim": 1
+                      },
+                      "classes": [
+                        {
+                          "name": "gjs-row",
+                          "private": 1
+                        }
+                      ],
+                      "attributes": {
+                        "id": "iqy1l"
+                      },
+                      "components": [
+                        {
+                          "name": "Cell",
+                          "draggable": ".gjs-row",
+                          "resizable": {
+                            "tl": 0,
+                            "tc": 0,
+                            "tr": 0,
+                            "cl": 0,
+                            "cr": 1,
+                            "bl": 0,
+                            "br": 0,
+                            "minDim": 1,
+                            "bc": 0,
+                            "currentUnit": 1,
+                            "step": 0.2
+                          },
+                          "classes": [
+                            {
+                              "name": "gjs-cell",
+                              "private": 1
+                            }
+                          ],
+                          "attributes": {
+                            "id": "iqnrh"
+                          },
+                          "components": [
+                            {
+                              "tagName": "reactbutton",
+                              "type": "ReactButton",
+                              "content": "Нажми меня",
+                              "attributes": {
+                                "variant": "primary",
+                                "size": "medium"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ],
               "head": {
@@ -375,7 +573,7 @@ const TestPreview = () => {
     ],
     "symbols": [],
     "dataSources": []
-  };
+  }
 
   const start = () => {
     const testPreview = async () => {

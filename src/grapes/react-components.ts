@@ -53,13 +53,11 @@ export default function registerReactComponents(editor: Editor) {
         ],
       },
     },
-    isComponent: (el) => {
-      return el.tagName === "REACTBUTTON";
-    },
+    isComponent: (el) => el.tagName === "REACTBUTTON",
   });
 
   // Регистрируем Flex компонент
-  editor.DomComponents.addType("REACTFLEX", {
+  editor.DomComponents.addType("ReactFlex", {
     extend: "react-component",
     model: {
       defaults: {
@@ -145,15 +143,17 @@ export default function registerReactComponents(editor: Editor) {
     content: {
       type: "ReactButton",
       content: "Нажми меня",
+      tagName: "reactbutton",
     },
   });
 
-  editor.BlockManager.add("REACTFLEX", {
+  editor.BlockManager.add("ReactFlex", {
     label: "Flex Container",
     category: "React Components",
     content: {
-      type: "REACTFLEX",
+      type: "ReactFlex",
       content: "<div>Flex контейнер</div>",
+      tagName: 'reactflex'
     },
   });
 }
