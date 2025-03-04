@@ -5,6 +5,11 @@ import "grapesjs/dist/css/grapes.min.css";
 // Импортируем базовые блоки (если нужны)
 import gjsBlocks from "grapesjs-blocks-basic";
 
+// Импортируем адаптер для React-компонентов
+import setupReactAdapter from "../grapes/base-react-adapter";
+// Импортируем регистрацию React-компонентов
+import registerReactComponents from "../grapes/react-components";
+
 interface GrapesEditorProps {
   // Здесь можем добавить пропсы по мере необходимости
 }
@@ -22,8 +27,13 @@ const GrapesEditor: React.FC<GrapesEditorProps> = () => {
         // Базовые размеры редактора
         height: "100vh",
         width: "auto",
-        // Временно отключаем хранилище
-        storageManager: false,
+        // Настраиваем хранилище (localStorage)
+        storageManager: {
+          type: 'local',
+          autosave: true,
+          autoload: true,
+          stepsBeforeSave: 1
+        },
         // Включаем плагин базовых блоков
         plugins: [gjsBlocks],
         // Настраиваем блоки
@@ -39,9 +49,49 @@ const GrapesEditor: React.FC<GrapesEditorProps> = () => {
         },
         // Добавляем панель с базовыми действиями
         panels: {
-          defaults: [],
+          defaults: [
+            {
+              id: 'panel-top',
+              el: '.panel__top',
+            },
+            {
+              id: 'basic-actions',
+              el: '.panel__basic-actions',
+              buttons: [
+                {
+                  id: 'visibility',
+                  active: true,
+                  className: 'btn-toggle-borders',
+                  label: '<u>B</u>',
+                  command: 'sw-visibility',
+                },
+                {
+                  id: 'export',
+                  className: 'btn-export',
+                  label: 'Export',
+                  command(editor) {
+                    const projectData = editor.getProjectData();
+                    const dataStr = JSON.stringify(projectData, null, 2);
+                    const blob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'grapesjs-project.json';
+                    a.click();
+                  },
+                },
+              ],
+            },
+          ],
         },
       });
+
+      // Настраиваем адаптер для React-компонентов
+      setupReactAdapter(editor);
+
+      // Регистрируем React-компоненты
+      registerReactComponents(editor);
 
       editorRef.current = editor;
     }
