@@ -1,0 +1,103 @@
+/* src/components/grapesjs/Flex.css */
+.gjs-flex {
+  display: flex;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+}
+
+/* Направления */
+.gjs-flex-row {
+  flex-direction: row;
+}
+
+.gjs-flex-column {
+  flex-direction: column;
+}
+
+/* Перенос */
+.gjs-flex-wrap {
+  flex-wrap: wrap;
+}
+
+.gjs-flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+/* Выравнивание по основной оси */
+.gjs-justify-start {
+  justify-content: flex-start;
+}
+
+.gjs-justify-center {
+  justify-content: center;
+}
+
+.gjs-justify-end {
+  justify-content: flex-end;
+}
+
+.gjs-justify-between {
+  justify-content: space-between;
+}
+
+.gjs-justify-around {
+  justify-content: space-around;
+}
+
+/* Выравнивание по поперечной оси */
+.gjs-items-start {
+  align-items: flex-start;
+}
+
+.gjs-items-center {
+  align-items: center;
+}
+
+.gjs-items-end {
+  align-items: flex-end;
+}
+
+.gjs-items-stretch {
+  align-items: stretch;
+}
+
+.gjs-items-baseline {
+  align-items: baseline;
+}
+
+/* Отступы */
+.gjs-gap-1 {
+  gap: 0.25rem;
+}
+
+.gjs-gap-2 {
+  gap: 0.5rem;
+}
+
+.gjs-gap-3 {
+  gap: 0.75rem;
+}
+
+.gjs-gap-4 {
+  gap: 1rem;
+}
+
+.gjs-gap-5 {
+  gap: 1.25rem;
+}
+
+.gjs-gap-6 {
+  gap: 1.5rem;
+}
+
+.gjs-gap-8 {
+  gap: 2rem;
+}
+
+.gjs-gap-10 {
+  gap: 2.5rem;
+}
+
+.gjs-gap-12 {
+  gap: 3rem;
+}

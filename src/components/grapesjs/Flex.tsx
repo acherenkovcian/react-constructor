@@ -1,4 +1,5 @@
 import React, { HTMLAttributes, ReactNode } from "react";
+import "./Flex.css";
 
 // Типы для пропсов Flex
 export interface FlexProps extends HTMLAttributes<HTMLDivElement> {

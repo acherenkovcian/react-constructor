@@ -14,6 +14,26 @@ interface GrapesEditorProps {
   // Здесь можем добавить пропсы по мере необходимости
 }
 
+const copyStylesAndScripts = (iframe: HTMLIFrameElement) => {
+  const doc = iframe.contentDocument;
+  //@ts-expect-error есть он
+  const head = doc.head;
+
+  // Копируем стили
+  document.querySelectorAll('style, link[rel="stylesheet"]').forEach(style => {
+    head.appendChild(style.cloneNode(true));
+  });
+
+  // Копируем скрипты
+  document.querySelectorAll('script').forEach(script => {
+    //@ts-expect-error есть он
+    const newScript = doc.createElement('script');
+    newScript.textContent = script.textContent;
+    head.appendChild(newScript);
+  });
+};
+
+
 const GrapesEditor: React.FC<GrapesEditorProps> = () => {
   // Используем ref для хранения экземпляра редактора
   const editorRef = useRef<any>(null);
@@ -92,6 +112,11 @@ const GrapesEditor: React.FC<GrapesEditorProps> = () => {
 
       // Регистрируем React-компоненты
       registerReactComponents(editor);
+
+      editor.on('load', () => {
+        const iframe = editor.Canvas.getFrameEl();
+        copyStylesAndScripts(iframe);
+      });
 
       editorRef.current = editor;
     }

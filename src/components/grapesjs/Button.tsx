@@ -1,5 +1,7 @@
 import React, { ButtonHTMLAttributes, ReactNode } from "react";
 
+import "./Button.css";
+
 // Типы для пропсов Button
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline";
