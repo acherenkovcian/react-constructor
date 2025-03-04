@@ -8,7 +8,7 @@ import { Editor } from "grapesjs";
  */
 export default function registerReactComponents(editor: Editor) {
   // Регистрируем Button компонент
-  editor.DomComponents.addType("Button", {
+  editor.DomComponents.addType("ReactButton", {
     extend: "react-component",
     model: {
       defaults: {
@@ -53,13 +53,13 @@ export default function registerReactComponents(editor: Editor) {
         ],
       },
     },
-    isComponent: (el) =>
-      el.tagName === "BUTTON" ||
-      (el.tagName === "DIV" && el.getAttribute("data-gjs-type") === "Button"),
+    isComponent: (el) => {
+      return el.tagName === "REACTBUTTON";
+    },
   });
 
   // Регистрируем Flex компонент
-  editor.DomComponents.addType("Flex", {
+  editor.DomComponents.addType("REACTFLEX", {
     extend: "react-component",
     model: {
       defaults: {
@@ -135,27 +135,24 @@ export default function registerReactComponents(editor: Editor) {
         ],
       },
     },
-    isComponent: (el) =>
-      el.tagName === "DIV" &&
-      (el.classList.contains("flex") ||
-        el.getAttribute("data-gjs-type") === "Flex"),
+    isComponent: (el) => el.tagName === "REACTFLEX",
   });
 
   // Добавляем блоки в панель блоков
-  editor.BlockManager.add("button", {
+  editor.BlockManager.add("ReactButton", {
     label: "Button",
     category: "React Components",
     content: {
-      type: "Button",
+      type: "ReactButton",
       content: "Нажми меня",
     },
   });
 
-  editor.BlockManager.add("flex", {
+  editor.BlockManager.add("REACTFLEX", {
     label: "Flex Container",
     category: "React Components",
     content: {
-      type: "Flex",
+      type: "REACTFLEX",
       content: "<div>Flex контейнер</div>",
     },
   });

@@ -110,39 +110,70 @@ const GrapesEditor: React.FC<GrapesEditorProps> = () => {
         },
         // Настройка Style Manager
         styleManager: {
-          appendTo: '#styles-container',
+          appendTo: "#styles-container",
           sectors: [
             {
-              name: 'Размеры',
+              name: "Размеры",
               open: false,
-              buildProps: ['width', 'height', 'min-width', 'min-height', 'max-width', 'max-height', 'padding', 'margin'],
+              buildProps: [
+                "width",
+                "height",
+                "min-width",
+                "min-height",
+                "max-width",
+                "max-height",
+                "padding",
+                "margin",
+              ],
             },
             {
-              name: 'Оформление',
+              name: "Оформление",
               open: false,
-              buildProps: ['background-color', 'color', 'font-size', 'font-weight', 'text-align', 'letter-spacing'],
+              buildProps: [
+                "background-color",
+                "color",
+                "font-size",
+                "font-weight",
+                "text-align",
+                "letter-spacing",
+              ],
             },
             {
-              name: 'Границы',
+              name: "Границы",
               open: false,
-              buildProps: ['border-radius', 'border', 'box-shadow'],
+              buildProps: ["border-radius", "border", "box-shadow"],
             },
             {
-              name: 'Позиционирование',
+              name: "Позиционирование",
               open: false,
-              buildProps: ['position', 'top', 'right', 'bottom', 'left', 'z-index'],
+              buildProps: [
+                "position",
+                "top",
+                "right",
+                "bottom",
+                "left",
+                "z-index",
+              ],
             },
             {
-              name: 'Flex',
+              name: "Flex",
               open: false,
-              buildProps: ['display', 'flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'align-content', 'gap'],
-            }
-          ]
+              buildProps: [
+                "display",
+                "flex-direction",
+                "flex-wrap",
+                "justify-content",
+                "align-items",
+                "align-content",
+                "gap",
+              ],
+            },
+          ],
         },
 
         // Настройка Trait Manager
         traitManager: {
-          appendTo: '#traits-container',
+          appendTo: "#traits-container",
         },
       });
 
@@ -158,24 +189,24 @@ const GrapesEditor: React.FC<GrapesEditorProps> = () => {
       });
 
       // Добавим переключение между вкладками
-      editor.on('load', () => {
-        const tabStyles = document.getElementById('tab-styles');
-        const tabTraits = document.getElementById('tab-traits');
-        const stylesContainer = document.getElementById('styles-container');
-        const traitsContainer = document.getElementById('traits-container');
+      editor.on("load", () => {
+        const tabStyles = document.getElementById("tab-styles");
+        const tabTraits = document.getElementById("tab-traits");
+        const stylesContainer = document.getElementById("styles-container");
+        const traitsContainer = document.getElementById("traits-container");
 
-        tabStyles.addEventListener('click', () => {
-          stylesContainer.classList.remove('hidden');
-          traitsContainer.classList.add('hidden');
-          tabStyles.classList.add('active');
-          tabTraits.classList.remove('active');
+        tabStyles.addEventListener("click", () => {
+          stylesContainer.classList.remove("hidden");
+          traitsContainer.classList.add("hidden");
+          tabStyles.classList.add("active");
+          tabTraits.classList.remove("active");
         });
 
-        tabTraits.addEventListener('click', () => {
-          stylesContainer.classList.add('hidden');
-          traitsContainer.classList.remove('hidden');
-          tabStyles.classList.remove('active');
-          tabTraits.classList.add('active');
+        tabTraits.addEventListener("click", () => {
+          stylesContainer.classList.add("hidden");
+          traitsContainer.classList.remove("hidden");
+          tabStyles.classList.remove("active");
+          tabTraits.classList.add("active");
         });
       });
 
@@ -193,6 +224,7 @@ const GrapesEditor: React.FC<GrapesEditorProps> = () => {
 
   return (
     <div className="editor-row flex flex-1">
+      <div className="panel__basic-actions"></div>
       {/* Панель блоков */}
       <div className="panel__left w-64 bg-gray-50 overflow-y-auto">
         <div id="blocks" className="p-2"></div>
