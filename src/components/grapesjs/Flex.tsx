@@ -24,9 +24,6 @@ const Flex: React.FC<FlexProps> = ({
   className = "",
   ...props
 }) => {
-  // Базовые классы
-  const baseClasses = "flex p-2 border border-gray-300";
-
   // Классы для direction
   const directionClasses = {
     row: "flex-row",
@@ -58,14 +55,10 @@ const Flex: React.FC<FlexProps> = ({
   const gapClass = `gap-${gap}`;
 
   // Собираем все классы
-  const classes = `${baseClasses} ${directionClasses[direction]} ${wrapClass} ${justifyClasses[justify]} ${itemsClasses[items]} ${gapClass} ${className}`;
+  const classes = `${directionClasses[direction]} ${wrapClass} ${justifyClasses[justify]} ${itemsClasses[items]} ${gapClass} ${className}`;
 
   return (
-    <div
-      className={classes}
-      style={{ padding: 24, border: "1px dashed gray" }}
-      {...props}
-    >
+    <div className={classes} {...props}>
       {children}
     </div>
   );

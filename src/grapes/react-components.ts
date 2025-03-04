@@ -15,6 +15,9 @@ export default function registerReactComponents(editor: Editor) {
         // Указываем React-компонент
         component: Button,
 
+        // Указываем, что компонент можно стилизовать
+        stylable: true,
+
         // Базовые атрибуты (пропсы)
         attributes: {
           variant: "primary",
@@ -62,6 +65,9 @@ export default function registerReactComponents(editor: Editor) {
       defaults: {
         // Указываем React-компонент
         component: Flex,
+
+        // Указываем, что компонент можно стилизовать
+        stylable: true,
 
         // Разрешаем перетаскивать другие компоненты внутрь
         droppable: true,
