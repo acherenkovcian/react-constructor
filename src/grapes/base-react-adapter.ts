@@ -86,7 +86,10 @@ export default function setupReactAdapter(editor: Editor) {
        * Создает маркер для дочерних элементов в React-компоненте
        */
       createChildrenMarker() {
-        return React.createElement("span", { [CHILDREN_MARKER_ATTR]: true });
+        return React.createElement("span", {
+          [CHILDREN_MARKER_ATTR]: true,
+          style: { display: "contents" },
+        });
       },
 
       /**
@@ -145,14 +148,28 @@ export default function setupReactAdapter(editor: Editor) {
         // Обновляем атрибуты элемента
         this.updateAttributes();
 
-        // Рендерим дочерние компоненты в временный контейнер
-        this.renderChildren();
-
-        // Рендерим React-компонент
+        // СНАЧАЛА рендерим React-компонент, чтобы создать маркер в DOM
         this.renderReactComponent();
 
-        // Перемещаем дочерние элементы в маркер
-        this.attachChildren();
+        // Затем делаем микрозадержку, чтобы React успел обновить DOM
+        // и создать маркер для дочерних элементов
+        const checkMarkerAndRenderChildren = () => {
+          const childrenMarker = this.el.querySelector(
+            `[${CHILDREN_MARKER_ATTR}]`,
+          );
+
+          if (childrenMarker) {
+            // Маркер найден, можно рендерить дочерние компоненты
+            this.renderChildren();
+            this.attachChildren();
+          } else {
+            // Маркер еще не создан, пробуем еще раз через requestAnimationFrame
+            requestAnimationFrame(checkMarkerAndRenderChildren);
+          }
+        };
+
+        // Запускаем проверку наличия маркера
+        checkMarkerAndRenderChildren();
 
         return this;
       },
