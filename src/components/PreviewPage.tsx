@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import grapesjs, { Editor } from "grapesjs";
 import parse, { DOMNode, domToReact } from "html-react-parser";
 import Button from "../components/grapesjs/Button";
@@ -234,7 +234,7 @@ const htmlToReactComponents = (html: string) => {
   // Создаем объект параметров парсера один раз
   const parseOptions = {
     replace(domNode) {
-      if (domNode.type !== 'tag') return domNode;
+      if (domNode.type !== "tag") return domNode;
 
       const tagName = domNode.name?.toLowerCase();
       console.log(`Обработка тега: ${tagName}`);
@@ -245,20 +245,51 @@ const htmlToReactComponents = (html: string) => {
         // Преобразование атрибутов
         const attribs = Object.entries(domNode.attribs || {}).reduce(
             (acc, [key, value]) => {
-              // Обработка атрибутов...
-              // ...код обработки атрибутов как у вас...
+              const trait = traits?.find(trait => {
+                if (typeof trait === 'string') {
+                  return trait.toLowerCase() === key.toLowerCase();
+                }
+
+                return trait.name?.toLowerCase() === key.toLowerCase();
+              });
+
+              // системные поля
+              if (!trait) {
+                acc[key] = value;
+
+                return acc;
+              }
+
+              // поля в которых может быть потерян регистр
+              if (typeof trait === 'string') {
+                acc[trait] = value;
+
+                return acc;
+              }
+
+              // булевые поля
+              if (trait.type === 'checkbox') {
+                acc[trait.name || key] = true;
+
+                return acc;
+              }
+
+              // остальные типы
+              acc[trait.name || key] = value;
+
               return acc;
             },
-            {} as Record<string, any>,
+            {} as Record<string, string | boolean>,
         );
 
         console.log(`Создание React-компонента для ${tagName}:`, attribs);
 
         // Важно: передаем те же настройки для рекурсивной обработки
         return (
-            <Component {...attribs}>
-              {domNode.children && domToReact(domNode.children as DOMNode[], parseOptions)}
-            </Component>
+          <Component {...attribs}>
+            {domNode.children &&
+              domToReact(domNode.children as DOMNode[], parseOptions)}
+          </Component>
         );
       }
 
@@ -266,12 +297,12 @@ const htmlToReactComponents = (html: string) => {
       if (domNode.children) {
         return {
           ...domNode,
-          children: domToReact(domNode.children as DOMNode[], parseOptions)
+          children: domToReact(domNode.children as DOMNode[], parseOptions),
         };
       }
 
       return domNode;
-    }
+    },
   };
 
   return parse(html, parseOptions);
@@ -297,12 +328,15 @@ const initializeGrapesJS = (jsonConfig) => {
 
   // Получаем HTML
   const html = editor.getHtml();
+  const css = editor.getCss();
+
+  console.log(css);
 
   // Чистим за собой
   document.body.removeChild(tempContainer);
   editor.destroy();
 
-  return html;
+  return { html, css };
 };
 
 const TestPreview = () => {
@@ -313,7 +347,7 @@ const TestPreview = () => {
   });
 
   // Тестовый JSON из вашего примера
-  const testJson = {
+  const testJson ={
     "assets": [],
     "styles": [
       {
@@ -383,18 +417,45 @@ const TestPreview = () => {
       },
       {
         "selectors": [
-          "#iyho2"
+          "text-gray-700",
+          "p-2"
         ],
         "style": {
-          "width": "100px"
+          "max-width": "600px",
+          "width": "100%",
+          "text-align": "center",
+          "font-size": "32px",
+          "background-color": "#ffa5a5"
         }
       },
       {
         "selectors": [
-          "#iqy1l"
+          "#io3a"
         ],
         "style": {
-          "width": "100px"
+          "display": "flex",
+          "align-items": "flex-start",
+          "gap": "12px",
+          "width": "100%",
+          "height": "auto",
+          "min-height": "20px"
+        }
+      },
+      {
+        "selectors": [
+          "#imxr"
+        ],
+        "style": {
+          "display": "block"
+        }
+      },
+      {
+        "selectors": [
+          "#ihzkl"
+        ],
+        "style": {
+          "padding": "24px 24px 24px 24px",
+          "border": "3px solid red"
         }
       }
     ],
@@ -418,6 +479,89 @@ const TestPreview = () => {
               },
               "components": [
                 {
+                  "name": "Row",
+                  "droppable": ".gjs-cell",
+                  "resizable": {
+                    "tl": 0,
+                    "tc": 0,
+                    "tr": 0,
+                    "cl": 0,
+                    "cr": 0,
+                    "bl": 0,
+                    "br": 0,
+                    "minDim": 1
+                  },
+                  "classes": [
+                    {
+                      "name": "gjs-row",
+                      "private": 1
+                    }
+                  ],
+                  "attributes": {
+                    "id": "ivyn"
+                  },
+                  "components": [
+                    {
+                      "name": "Cell",
+                      "draggable": ".gjs-row",
+                      "resizable": {
+                        "tl": 0,
+                        "tc": 0,
+                        "tr": 0,
+                        "cl": 0,
+                        "cr": 1,
+                        "bl": 0,
+                        "br": 0,
+                        "minDim": 1,
+                        "bc": 0,
+                        "currentUnit": 1,
+                        "step": 0.2
+                      },
+                      "classes": [
+                        {
+                          "name": "gjs-cell",
+                          "private": 1
+                        }
+                      ],
+                      "attributes": {
+                        "id": "io3a"
+                      },
+                      "components": [
+                        {
+                          "tagName": "reactbutton",
+                          "type": "ReactButton",
+                          "content": "Нажми меня",
+                          "attributes": {
+                            "variant": "primary",
+                            "size": "large",
+                            "id": "imxr"
+                          }
+                        },
+                        {
+                          "tagName": "reactbutton",
+                          "type": "ReactButton",
+                          "content": "Нажми меня",
+                          "attributes": {
+                            "variant": "secondary",
+                            "size": "small",
+                            "id": "ic45"
+                          }
+                        },
+                        {
+                          "tagName": "reactbutton",
+                          "type": "ReactButton",
+                          "content": "Нажми меня",
+                          "attributes": {
+                            "variant": "outline",
+                            "size": "medium",
+                            "id": "ic45-2"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
                   "tagName": "reactflex",
                   "type": "ReactFlex",
                   "content": "<div>Flex контейнер</div>",
@@ -427,132 +571,27 @@ const TestPreview = () => {
                     "justify": "start",
                     "items": "start",
                     "gap": 4,
-                    "id": "izih"
+                    "id": "ihzkl"
                   },
                   "components": [
                     {
-                      "name": "Row",
-                      "droppable": ".gjs-cell",
-                      "resizable": {
-                        "tl": 0,
-                        "tc": 0,
-                        "tr": 0,
-                        "cl": 0,
-                        "cr": 0,
-                        "bl": 0,
-                        "br": 0,
-                        "minDim": 1
-                      },
-                      "classes": [
-                        {
-                          "name": "gjs-row",
-                          "private": 1
-                        }
-                      ],
+                      "tagName": "reactbutton",
+                      "type": "ReactButton",
+                      "content": "Нажми меня",
                       "attributes": {
-                        "id": "iyho2"
-                      },
-                      "components": [
-                        {
-                          "name": "Cell",
-                          "draggable": ".gjs-row",
-                          "resizable": {
-                            "tl": 0,
-                            "tc": 0,
-                            "tr": 0,
-                            "cl": 0,
-                            "cr": 1,
-                            "bl": 0,
-                            "br": 0,
-                            "minDim": 1,
-                            "bc": 0,
-                            "currentUnit": 1,
-                            "step": 0.2
-                          },
-                          "classes": [
-                            {
-                              "name": "gjs-cell",
-                              "private": 1
-                            }
-                          ],
-                          "attributes": {
-                            "id": "ilgj1"
-                          },
-                          "components": [
-                            {
-                              "tagName": "reactbutton",
-                              "type": "ReactButton",
-                              "content": "Нажми меня",
-                              "attributes": {
-                                "variant": "primary",
-                                "size": "medium"
-                              }
-                            }
-                          ]
-                        }
-                      ]
+                        "variant": "primary",
+                        "size": "medium"
+                      }
                     },
                     {
-                      "name": "Row",
-                      "droppable": ".gjs-cell",
-                      "resizable": {
-                        "tl": 0,
-                        "tc": 0,
-                        "tr": 0,
-                        "cl": 0,
-                        "cr": 0,
-                        "bl": 0,
-                        "br": 0,
-                        "minDim": 1
-                      },
-                      "classes": [
-                        {
-                          "name": "gjs-row",
-                          "private": 1
-                        }
-                      ],
+                      "tagName": "reactbutton",
+                      "type": "ReactButton",
+                      "content": "Нажми меня",
                       "attributes": {
-                        "id": "iqy1l"
-                      },
-                      "components": [
-                        {
-                          "name": "Cell",
-                          "draggable": ".gjs-row",
-                          "resizable": {
-                            "tl": 0,
-                            "tc": 0,
-                            "tr": 0,
-                            "cl": 0,
-                            "cr": 1,
-                            "bl": 0,
-                            "br": 0,
-                            "minDim": 1,
-                            "bc": 0,
-                            "currentUnit": 1,
-                            "step": 0.2
-                          },
-                          "classes": [
-                            {
-                              "name": "gjs-cell",
-                              "private": 1
-                            }
-                          ],
-                          "attributes": {
-                            "id": "iqnrh"
-                          },
-                          "components": [
-                            {
-                              "tagName": "reactbutton",
-                              "type": "ReactButton",
-                              "content": "Нажми меня",
-                              "attributes": {
-                                "variant": "primary",
-                                "size": "medium"
-                              }
-                            }
-                          ]
-                        }
-                      ]
+                        "variant": "primary",
+                        "size": "medium",
+                        "id": "idcx6"
+                      }
                     }
                   ]
                 }
@@ -582,7 +621,7 @@ const TestPreview = () => {
       setOutput((prev) => ({ ...prev, json: testJson }));
 
       // Шаг 2: Инициализируем GrapesJS и получаем HTML
-      const html = await initializeGrapesJS(testJson);
+      const { html, css } = await initializeGrapesJS(testJson);
       console.log("Сгенерированный HTML:", html);
       setOutput((prev) => ({ ...prev, html }));
 
@@ -590,6 +629,10 @@ const TestPreview = () => {
       const reactComponent = htmlToReactComponents(html);
       console.log("React компонент:", reactComponent);
       setOutput((prev) => ({ ...prev, react: reactComponent }));
+
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(css);
+      document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
     };
 
     testPreview();

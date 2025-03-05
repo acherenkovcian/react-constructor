@@ -22,6 +22,7 @@ const Flex: React.FC<FlexProps> = ({
   gap = 4,
   children,
   className = "",
+  id,
   ...props
 }) => {
   // Классы для direction

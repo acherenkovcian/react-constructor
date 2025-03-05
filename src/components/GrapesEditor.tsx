@@ -3,7 +3,8 @@ import grapesjs from "grapesjs";
 // Импортируем стили GrapesJS
 import "grapesjs/dist/css/grapes.min.css";
 // Импортируем базовые блоки (если нужны)
-import gjsBlocks from "grapesjs-blocks-basic";
+import gjsBasicBlocks from "grapesjs-blocks-basic";
+import gjsPresetWebpage from "grapesjs-blocks-basic";
 
 // Импортируем адаптер для React-компонентов
 import setupReactAdapter from "../grapes/base-react-adapter";
@@ -56,7 +57,7 @@ const GrapesEditor: React.FC<GrapesEditorProps> = () => {
           stepsBeforeSave: 1,
         },
         // Включаем плагин базовых блоков
-        plugins: [gjsBlocks],
+        plugins: [gjsBasicBlocks, gjsPresetWebpage],
         // Настраиваем блоки
         blockManager: {
           appendTo: "#blocks",
@@ -64,7 +65,7 @@ const GrapesEditor: React.FC<GrapesEditorProps> = () => {
             {
               id: "text",
               label: "Text",
-              content: '<div class="text-gray-700 p-2">Hello World</div>',
+              content: '<span data-gjs-type="text">Hello World</span>',
             },
           ],
         },
